@@ -9,7 +9,7 @@ class BoardException: public std::exception{
     string mesaj;
 public:
     BoardException(string msj):mesaj{msj}{};
-    string get_mesaj()
+    string get_message()
     {
         return mesaj;
     }
@@ -22,19 +22,18 @@ private:
     int configuration;
     int moves;
     int status; // 0 = in progress; 1 = lost, 2 = won;
-    int atacate; // nr de pozitii de barci atacate ; cand am 9 pozitii atacate, statusul devine 2
+    int attacked; // when 9 positions are attacked, game is won
     void load_configuration(int config);
 
 public:
     Board(int size, int configuration):size{size}{
-        board = vector(size,vector<int>(size,0)); // el din vector initializate cu zero
-        // vector de vector de elemente initializate cu 0
-        moves=30; // nr initial de mutari posibile
-        status=0; // status = 1 -> pierdut, status = 2 -> castigat, status = 0 -> in progres
-        atacate=0;
+        board = vector(size,vector<int>(size,0));
+        moves=30;
+        status=0;
+        attacked=0;
         load_configuration(configuration);
     }
-    int get_size() const{ // pot pune const, nu modiifca obiectul board
+    int get_size() const{
         return size;
     };
     int get_coordinates(int row, int col)const{
@@ -50,8 +49,8 @@ public:
         return status;
     }
 
-    int get_atacate(){
-        return atacate;
+    int get_attacked(){
+        return attacked;
     }
 
 };

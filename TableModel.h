@@ -18,9 +18,7 @@ public:
     QVariant data(const QModelIndex& index, int role=Qt::DisplayRole) const override{
         int row=index.row();
         int col=index.column();
-        //verificare valid nue nevoie ca se selecteaza din tabel
         int value=board.get_coordinates(row,col);
-        //qDebug()<<row<<" "<<col<<" "<<role<<"\n";
         if(role==Qt::DisplayRole) //
         {
             if(value==0||value==1)
@@ -40,7 +38,7 @@ public:
                 return QBrush(Qt::red);
 
         }
-        return {}; // fara asta am segmentation fault
+        return {};
 
     };
 

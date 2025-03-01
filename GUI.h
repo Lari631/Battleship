@@ -22,8 +22,7 @@ private:
     QPushButton *attack;
     QPushButton *new_game;
     QLineEdit *config;
-    QTableView *table_view; //la table view ii asociez un model
-    //widget face o copie la date
+    QTableView *table_view;
     BattleshipTableModel *table_model;
     void init_gui();
     void reload_table();

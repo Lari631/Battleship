@@ -9,22 +9,20 @@ void GUI::init_gui() {
     QFormLayout *layout= new QFormLayout{};
     main = new QHBoxLayout;
     right_side = new QVBoxLayout;
-    mesaj = new QLabel("Alege un numar de la 1 la 5 si apasa NewGame");
+    mesaj = new QLabel("Choose a number between 1 and 5 and press NewGame");
     status = new QLabel;
-    movess = new QLabel("Mutari ramase: 30");
-    reguli = new QLabel("Dimensiuni barci:\n1*barca de 2\n1* barca de 3\n1*barca de 4");
+    movess = new QLabel("Remaining moves: 30");
+    reguli = new QLabel("Boat dimensions:\n1 boat with 2 cells\n1 boat with 3 cells\n1 boat with 4 cells");
     attack= new QPushButton("Attack");
     new_game = new QPushButton("New Game");
     config = new QLineEdit;
     table_view = new QTableView;
     table_model = new BattleshipTableModel(board);
-    //model = partea de date
-    //view ia datele din model; gen view data
     table_view->setModel(table_model);
     table_view->resizeColumnsToContents();
     table_view->resizeRowsToContents();
 
-    layout->addRow("Alege jocul (nr de la 1 la 5):",config);
+    layout->addRow("Choose a game (number between 1 and 5):",config);
     setLayout(main);
     main->addWidget(table_view);
     right_side->addWidget(mesaj);
@@ -41,53 +39,47 @@ void GUI::init_gui() {
 void GUI::connect(){
     QObject::connect(attack, &QPushButton::clicked, [&](){
         QModelIndexList indexes = table_view->selectionModel()->selectedIndexes();
-        //apas attack si atac celula corespunzatoare
         if(indexes.isEmpty()){
-            QMessageBox::warning( nullptr, "hopa","selecteaza o celula.");
+            QMessageBox::warning( nullptr, "oops!","select a cell to attack.");
         }
         else{
             QModelIndex index =table_view->selectionModel()->selectedIndexes()[0];
-            qDebug()<<index.row()<<" "<<index.column()<<"\n";
             try{
                 board.attack_coordinates(index.row(),index.column());
             }
             catch (BoardException &ex){
-                // am exceptie daca incerc sa lovesc un punct deja lovit
-                //afisez in qmessagebox msj de eroare
-                QMessageBox::warning(nullptr,"hopa", "ai mai atacat o data...");
+                QMessageBox::warning(nullptr,"oops!", "point already attacked!");
             }
         }
         reload_table();
     });
     QObject::connect(new_game,&QPushButton::clicked, [&](){
         int nr = config->text().toInt();
-        qDebug()<<"Numar din edit: "<<nr;
         if(nr<1 || nr>5)
         {
-            QMessageBox::warning(nullptr, "numaram....","de la 1 la 5...");
+            QMessageBox::warning(nullptr, "oops!","Choose a number between 1 and 5");
         }
         else{
             board= Board(10,nr);
             reload_table();
         }
-
     });
 }
 
 void GUI::reload_table() {
-    string msj="Mutari ramase: "+std::to_string(board.get_moves());
+    string msj="Remaining moves: "+std::to_string(board.get_moves());
     movess->setText(QString::fromStdString(msj));
-    //setez statusul
     if(board.get_status()==0)
     {
         status->setText(QString::fromStdString("In progress..."));
     }
     else if(board.get_status()==1){
-        status->setText(QString::fromStdString("Ai pierdut :("));
+        status->setText(QString::fromStdString("Game lost :("));
+        QMessageBox::information(nullptr,"Oh well..","You lost. Try one more time!");
     }
     else {
-        status->setText(QString::fromStdString("Ai castigat!! :)"));
-        QMessageBox::information(nullptr,"bravooo","Ai castigat!! :)");
+        status->setText(QString::fromStdString("Game won!! :)"));
+        QMessageBox::information(nullptr,"Congrats!","You won!! :)");
     }
     table_model->update();
 }
